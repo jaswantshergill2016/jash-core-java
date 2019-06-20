@@ -3,6 +3,7 @@ package com.bank;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -163,7 +164,16 @@ public class BankingApp {
                             //:ACC-00004-TX-00004:Wed Jun 19 17:01:20 EDT 2019:true:2000.0:2000.0
                             String [] transactionValues = readLine.split(":");
                             String transactionId = transactionValues[1];
-                            Date transactionDate = new Date(transactionValues[2]);
+                            //String sDate1="31/12/1998";
+                            //Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(sDate1);
+                            //Date transactionDate = new Date(transactionValues[2]);
+                            Date transactionDate = null;
+                            try {
+                                transactionDate = new SimpleDateFormat("dd/MM/yyyy").parse(transactionValues[2]);
+                            } catch (ParseException e) {
+                                System.out.println("Unable to parse date string");
+                                e.printStackTrace();
+                            }
                             boolean isDebit = Boolean.parseBoolean(transactionValues[3]);
                             Double balance = Double.parseDouble(transactionValues[4]);
                             Double amount = Double.parseDouble(transactionValues[5]);
@@ -330,14 +340,17 @@ public class BankingApp {
     private static void printTransactionsOfAccount() {
         System.out.println("============printing transactions ==================");
 
-        //Showing 4 Transactions:
+        //Showing 4 Transactions:6
+
         System.out.println("Showing "+transactionsMap.size()+" Transactions:");
 
         // using for-each loop for iteration over Map.entrySet()
         for (Map.Entry<String,Transaction> entry : transactionsMap.entrySet()) {
             Transaction transaction = entry.getValue();
             System.out.println("transactionID:   "+transaction.getTransactionId());
-            System.out.println("Date: "+transaction.getDate());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String date = simpleDateFormat.format(transaction.getDate());
+            System.out.println("Date: "+date);
             System.out.println(transaction.isDebitOrCredit()+": "+transaction.getAmount());
             System.out.println("Balance: "+transaction.getBalance());
             System.out.println("===========================================================");
