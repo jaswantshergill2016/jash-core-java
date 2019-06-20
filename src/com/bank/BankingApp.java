@@ -903,7 +903,8 @@ public class BankingApp {
         System.out.println(str2Display);
         String input = "";
         try {
-            input = myObj.next();  // Read user input
+            //changed this
+            input = myObj.nextLine();  // Read user input
         } catch (InputMismatchException ex) {
             System.out.println("Please enter correct input");
             input = "";
