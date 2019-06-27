@@ -1,7 +1,8 @@
 package com.bank;
 
+import com.bank.service.CreateAccountService;
+import com.bank.service.TransferService;
 import org.apache.log4j.Logger;
-
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,24 +12,21 @@ public class BankingApp {
 
     private static Logger logger = Logger.getLogger(BankingApp.class);
 
-    private static final String dateFormat = "dd/MM/yyyy";
+    private static final String dateFormat = "dd/MM/yyyy HH-mm-ss";
 
-    private static final Map<String, Account> accountsMap = new HashMap<>();
-    private static final Map<String, Customer> customersMap = new HashMap<>();
-    private static final Map<String, Transaction> transactionsMap = new HashMap<>();
+    public static Map<String, Account> accountsMap = new HashMap<>();
+    public static Map<String, Customer> customersMap = new HashMap<>();
+    public static Map<String, Transaction> transactionsMap = new HashMap<>();
 
 
-    private static String currentAccountId = "";
-    private static String currentCustomerId = "";
-    private static String currentTransactionId = "";
+    public static String currentAccountId = "";
+    public static String currentCustomerId = "";
+    public static String currentTransactionId = "";
 
 
     public static void main(String[] args) {
-
         readBankStateFromFile();
         executeBankOperations();
-
-
     }
 
     private static void executeBankOperations() {
@@ -40,7 +38,6 @@ public class BankingApp {
     }
 
     private static void case4BankOperations(int option) {
-
         switch (option) {
             case 1:
                 createNewAccount();
@@ -64,13 +61,12 @@ public class BankingApp {
                 printAllAccountDetailsInBank();
                 break;
             case 8:
-                logger.info("Exiting from banking service");
+                logger.debug("Exiting from banking service");
                 writeBankState2File();
-
                 System.exit(0);
                 break;
             default:
-                logger.info("Please select right option from below");
+                logger.debug("Please select right option from below");
 
         }
 
@@ -153,7 +149,7 @@ public class BankingApp {
                             try {
                                 transactionDate = new SimpleDateFormat(dateFormat).parse(transactionValues[2]);
                             } catch (ParseException e) {
-                                logger.info("Unable to parse date string " +e);
+                                logger.debug("Unable to parse date string " +e);
 
                             }
                             boolean isDebit = Boolean.parseBoolean(transactionValues[3]);
@@ -197,7 +193,7 @@ public class BankingApp {
             try {
                 bufferedReader.close();
             } catch (IOException e) {
-                logger.info(e);
+                logger.debug(e);
             }
         }
 
@@ -218,9 +214,6 @@ public class BankingApp {
                     Iterator<Account> iter = accountMapValues.iterator();
                     while (iter.hasNext()) {
                         AbstractAccount account = (AbstractAccount)iter.next();
-
-
-
                         bufferedWriter.write(":" + account.getAccountId() +":"+account.getAccountBalance()+":"+account.getCustomerId()+":"+account.getAccountType() +"\n");
                     }
                 }
@@ -231,7 +224,6 @@ public class BankingApp {
                     Iterator<Customer> iter1 = customerMapValues.iterator();
                     while (iter1.hasNext()) {
                         AbstractCustomer customer = (AbstractCustomer)iter1.next();
-
                         bufferedWriter.write(":" + customer.getCustomerId()+":"+ customer.getName()+":"+customer.getPhone()+":"+customer.getAddress()+":"+customer.getCustomerType() +"\n");
                     }
 
@@ -260,9 +252,6 @@ public class BankingApp {
 
                 bufferedWriter.write("::Current Transaction Id\n");
                 bufferedWriter.write(currentTransactionId+"\n");
-
-
-
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -274,57 +263,44 @@ public class BankingApp {
                 } catch (IOException  | NullPointerException e) {
                     e.printStackTrace();
                 }
-
             }
         }
-
     }
 
     private static void printAllAccountDetailsInBank() {
-        logger.info("Starting to show all Account Details:");
-        logger.info("Showing "+accountsMap.size()+" Accounts Details:");
+        logger.debug("Starting to show all Account Details:");
+        logger.debug("Showing "+accountsMap.size()+" Accounts Details:");
 
         Collection <Account> accountValuesList = accountsMap.values();
         Iterator<Account> iter = accountValuesList.iterator();
 
         while(iter.hasNext()){
             AbstractAccount account = (AbstractAccount)iter.next();
-            logger.info("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
+            logger.debug("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
                     ", AcctBalance: "+account.getAccountBalance());
         }
-
-
-
-
-
-
     }
 
     private static void printTransactionsOfAccount() {
-        logger.info("============printing transactions ==================");
+        logger.debug("============printing transactions ==================");
 
 
-        logger.info("Showing "+transactionsMap.size()+" Transactions:");
+        logger.debug("Showing "+transactionsMap.size()+" Transactions:");
 
         for (Map.Entry<String,Transaction> entry : transactionsMap.entrySet()) {
             Transaction transaction = entry.getValue();
-            logger.info("transactionID:   "+transaction.getTransactionId());
+            logger.debug("transactionID:   "+transaction.getTransactionId());
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
             String date = simpleDateFormat.format(transaction.getDate());
-            logger.info("Date: "+date);
-            logger.info(transaction.isDebitOrCredit()+": "+transaction.getAmount());
-            logger.info("Balance: "+transaction.getBalance());
-            logger.info("===========================================================");
+            logger.debug("Date: "+date);
+            logger.debug(transaction.isDebitOrCredit()+": "+transaction.getAmount());
+            logger.debug("Balance: "+transaction.getBalance());
+            logger.debug("===========================================================");
         }
-
     }
 
-
-
-
-
     private static void transferMoneyBetweenAccounts() {
-        logger.info("Starting Money Transfer:");
+        logger.debug("Starting Money Transfer:");
 
         String sourceAccountID = getAccountIdFromUser("Enter Source Account Id: ");
 
@@ -337,10 +313,12 @@ public class BankingApp {
 
 
         while(money2Withdraw > sourceAccount.getAccountBalance()){
-            logger.info("Source Account Balance is less than "+money2Withdraw+", please enter another amount:");
+            logger.debug("Source Account Balance is less than "+money2Withdraw+", please enter another amount:");
             money2Withdraw = optionFromUser("How much money you want to transfer:");
         }
 
+        new TransferService().transferMoneyBetweenAccounts(sourceAccount, destinationAccount,money2Withdraw);
+        /*
         try {
             sourceAccount.transferMoneyOut(new Double(money2Withdraw));
             destinationAccount.transferMoneyIn(new Double(money2Withdraw));
@@ -361,24 +339,24 @@ public class BankingApp {
 
 
         } catch (ExceedingTotalBalanceException e) {
-            logger.info("Money to withdraw exceeds total balance");
+            logger.debug("Money to withdraw exceeds total balance");
             e.printStackTrace();
         } catch (ExceedingDailyLimitException e) {
-            logger.info("Money to withdraw exceeds daily limit");
+            logger.debug("Money to withdraw exceeds daily limit");
             e.printStackTrace();
         }
-        logger.info("Transferring money...");
-        logger.info("Money Transferred.");
-        logger.info("Source: AcctId: "+sourceAccount.getAccountId()+", AcctOwner: "+sourceAccount.getCustomerId()+"" +
+        logger.debug("Transferring money...");
+        logger.debug("Money Transferred.");
+        logger.debug("Source: AcctId: "+sourceAccount.getAccountId()+", AcctOwner: "+sourceAccount.getCustomerId()+"" +
                 ", AcctBalance: "+sourceAccount.getAccountBalance());
 
-        logger.info("Destination AcctId: "+destinationAccount.getAccountId()+", AcctOwner: "+destinationAccount.getCustomerId()+"" +
+        logger.debug("Destination AcctId: "+destinationAccount.getAccountId()+", AcctOwner: "+destinationAccount.getCustomerId()+"" +
                 ", AcctBalance: "+destinationAccount.getAccountBalance());
-
+    */
     }
 
     private static void doMoneyWithdraw() {
-        logger.info("Starting Money WithdrawL:");
+        logger.debug("Starting Money WithdrawL:");
 
         String accountID = getAccountIdFromUser("Enter Account Id: ");
 
@@ -388,7 +366,7 @@ public class BankingApp {
 
         try {
             account.transferMoneyOut(new Double(money2Withdraw));
-            logger.info("Money Withdrawn..");
+            logger.debug("Money Withdrawn..");
 
             String transactionId = generateTransactionId(account.getAccountId());
             currentTransactionId = transactionId;
@@ -397,17 +375,17 @@ public class BankingApp {
 
             transactionsMap.put(transactionId,transaction);
         } catch (ExceedingTotalBalanceException e) {
-            logger.info("Drawn amount is more than total balance");
+            logger.debug("Drawn amount is more than total balance");
             e.printStackTrace();
         }
-        logger.info("Showing Account Details:");
-        logger.info("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
+        logger.debug("Showing Account Details:");
+        logger.debug("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
                 ", AcctBalance: "+account.getAccountBalance());
     }
 
     private static void doMoneyDeposit() {
 
-        logger.info("Staring money deposit");
+        logger.debug("Staring money deposit");
 
         String accountID = getAccountIdFromUser("Enter Account Id: ");
 
@@ -417,7 +395,7 @@ public class BankingApp {
         AbstractAccount account = (AbstractAccount)accountsMap.get(accountID);
         try {
             account.transferMoneyIn(new Double(money2Deposit));
-            logger.info("Money Deposited..");
+            logger.debug("Money Deposited..");
 
             String transactionId = generateTransactionId(account.getAccountId());
             currentTransactionId = transactionId;
@@ -427,17 +405,17 @@ public class BankingApp {
             transactionsMap.put(transactionId,transaction);
 
         } catch (ExceedingDailyLimitException e) {
-            logger.info("Not Able to deposit money, the amount is exceeding Daily Limit");
+            logger.debug("Not Able to deposit money, the amount is exceeding Daily Limit");
             e.printStackTrace();
         }
-        logger.info("Showing Account Details:");
-        logger.info("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
+        logger.debug("Showing Account Details:");
+        logger.debug("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
                 ", AcctBalance: "+account.getAccountBalance());
 
     }
 
     private static void showDetailsOfAccount() {
-        logger.info("Showing account details");
+        logger.debug("Showing account details");
 
 
         String accountID = getAccountIdFromUser("Enter Account Id: ");
@@ -445,14 +423,14 @@ public class BankingApp {
 
         AbstractAccount account = (AbstractAccount)accountsMap.get(accountID);
 
-        logger.info("Showing Account Details:");
+        logger.debug("Showing Account Details:");
 
-        logger.info("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
+        logger.debug("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
                 ", AcctBalance: "+account.getAccountBalance());
     }
 
     private static void createNewAccount() {
-        logger.info("creating new account");
+        logger.debug("creating new account");
         int accountType = typeOfAccount();
 
         int customerType = typeOfCustomer();
@@ -462,6 +440,7 @@ public class BankingApp {
         String customerPhone = optionStrFromUser("Enter Customer Phone ");
 
         int typeOfMailPreference = typeOfMailPreference();
+        /*
         MailPreference mailPreference = null;
         if(typeOfMailPreference == 1){
             mailPreference = MailPreference.EMAIL;
@@ -470,7 +449,14 @@ public class BankingApp {
         }else if(typeOfMailPreference == 3){
             mailPreference = MailPreference.TEXTMESSAGE;
         }
+        */
+        /*BankingApp.accountsMap = */new CreateAccountService().createNewAccount(
+                                            customerType, accountType,
+                                            customerName,customerAddress,
+                                          customerPhone,typeOfMailPreference
 
+                                            /*BankingApp.accountsMap*/);
+         /*
         Customer customer = null;
         if (customerType == 1) {
             customer = new PersonalCustomer();
@@ -505,23 +491,23 @@ public class BankingApp {
 
 
 
-        String transactionId = generateTransactionId(BankingApp.currentAccountId);
-        currentTransactionId = transactionId;
+        currentTransactionId = generateTransactionId(BankingApp.currentAccountId);
+
         Transaction transaction = null;
         if(account != null){
-            transaction = new Transaction(transactionId,new Date(),true, ((AbstractAccount) account).getAccountBalance(),amount);
+            transaction = new Transaction(currentTransactionId,new Date(),true, ((AbstractAccount) account).getAccountBalance(),amount);
 
         }
 
 
-        transactionsMap.put(transactionId,transaction);
+        transactionsMap.put(currentTransactionId,transaction);
 
         if(account !=null ){
             accountsMap.put(((AbstractAccount) account).getAccountId(), account);
         }
 
         String customerId = generateCustomerId();
-        BankingApp.currentCustomerId = customerId;
+        currentCustomerId = customerId;
 
 
         ((AbstractCustomer) customer).setCustomerId(customerId);
@@ -532,18 +518,17 @@ public class BankingApp {
         ((AbstractCustomer) customer).getCustomerAccounts().add(account);
         customersMap.put(((AbstractCustomer) customer).getCustomerId(), customer);
 
-        logger.info("Creating Account...");
-        logger.info("Account Created.");
+        logger.debug("Creating Account...");
+        logger.debug("Account Created.");
 
-        logger.info("========Account Details======");
-        logger.info("Owner Name: "+((AbstractCustomer) customer).getName());
-        logger.info("AccountId is : " + ((AbstractAccount) account).getAccountId());
-        logger.info("Account Balance: "+((AbstractAccount)account).getAccountBalance());
-
-
+        logger.debug("========Account Details======");
+        logger.debug("Owner Name: "+((AbstractCustomer) customer).getName());
+        logger.debug("AccountId is : " + ((AbstractAccount) account).getAccountId());
+        logger.debug("Account Balance: "+((AbstractAccount)account).getAccountBalance());
+    */
     }
 
-    private static String generateTransactionId(String accountID) {
+    public static String generateTransactionId(String accountID) {
         String currentTransactionIdStr = BankingApp.currentTransactionId;
         String transactionIdStr = null;
         if (currentTransactionIdStr == null || currentTransactionIdStr.equals("")) {
@@ -577,14 +562,14 @@ public class BankingApp {
             } else if (typeOfMailPreference == 3) {
                 return 3;
             } else {
-                logger.info("Please select appropriate type of mail preference 1,2,3");
+                logger.debug("Please select appropriate type of mail preference 1,2,3");
 
             }
         }
 
 
     }
-
+/*
     private static String generateAccountId() {
         String currentAccountIdStr = BankingApp.currentAccountId;
         String accountIdStr = null;
@@ -603,7 +588,8 @@ public class BankingApp {
 
         return accountIdStr;
     }
-
+*/
+/*
     private static String generateCustomerId() {
         String currentCustomerIdStr = BankingApp.currentCustomerId;
         String customerIdStr = null;
@@ -624,13 +610,15 @@ public class BankingApp {
 
         return customerIdStr;
     }
+
+ */
     private static String getAccountIdFromUser(String  str2Display) {
         while (true) {
             String accountId = optionStrFromUser(str2Display);
                 if(accountsMap.containsKey(accountId)){
                     return accountId;
                 } else {
-                    logger.info("Wrong AccountId :");
+                    logger.debug("Wrong AccountId :");
 
                 }
         }
@@ -648,7 +636,7 @@ public class BankingApp {
             } else if (typeOfAccount == 2) {
                 return 2;
             } else {
-                logger.info("Please select appropriate type of account");
+                logger.debug("Please select appropriate type of account");
             }
         }
 
@@ -664,7 +652,7 @@ public class BankingApp {
             } else if (typeOfCustomer == 2) {
                 return 2;
             } else {
-                logger.info("Please select appropriate type of customer");
+                logger.debug("Please select appropriate type of customer");
 
             }
         }
@@ -673,12 +661,12 @@ public class BankingApp {
 
     private static int optionFromUser(String str2Display) {
         Scanner myObj = new Scanner(System.in);
-        logger.info(str2Display);
+        logger.debug(str2Display);
         int input = 0;
         try {
             input = myObj.nextInt();
         } catch (InputMismatchException ex) {
-            logger.info("Please enter correct input");
+            logger.debug("Please enter correct input");
             input = 0;
         }
 
@@ -687,12 +675,12 @@ public class BankingApp {
 
     private static String optionStrFromUser(String str2Display) {
         Scanner myObj = new Scanner(System.in);
-        logger.info(str2Display);
+        logger.debug(str2Display);
         String input = "";
         try {
             input = myObj.nextLine();
         } catch (InputMismatchException ex) {
-            logger.info("Please enter correct input");
+            logger.debug("Please enter correct input");
             input = "";
         }
 
@@ -700,7 +688,7 @@ public class BankingApp {
     }
 
     public static void printBankOptions() {
-        logger.info("Menu:\n" +
+        logger.debug("Menu:\n" +
                 "1. Create new Account\n" +
                 "2. Show Details of an Account\n" +
                 "3. Do Money Deposit\n" +
