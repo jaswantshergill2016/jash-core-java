@@ -10,11 +10,15 @@ public class CreateAccountServiceTest {
     @Test
     public void testCreateNewAccount(){
 
-        /*BankingApp.accountsMap =*/ new CreateAccountService().createNewAccount(
+        /*BankingApp.accountsMap =*/
+        /*new CreateAccountService().createNewAccount(
                 1, 1,
                 "Jaswant","Toronto",
-                "1234567890",1
-                /*BankingApp.accountsMap*/);
+                "1234567890",1);
+
+         */
+                /*BankingApp.accountsMap*/
+
         Assert.assertTrue(BankingApp.accountsMap.size()==1);
         Assert.assertTrue(BankingApp.customersMap.size()==1);
     }

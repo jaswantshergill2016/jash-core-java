@@ -12,8 +12,14 @@ public class CreateAccountService {
 
     public void /*Map<String, Account>*/ createNewAccount(int customerType, int accountType,
                                                  String customerName, String customerAddress,
-                                                 String customerPhone, int typeOfMailPreference
-                                                 /*Map<String,Account> accountsMap*/){
+                                                 String customerPhone, int typeOfMailPreference,
+                                                 Map<String,Account> accountsMap,
+                                                          Map<String,Customer> customersMap,
+                                                          Map<String,Transaction> transactionsMap//,
+                                                          //String currentAccountId,
+                                                          //String currentCustomerId,
+                                                          //String currentTransactionId
+                                                    ){
 
         MailPreference mailPreference = null;
         if(typeOfMailPreference == 1){
@@ -68,11 +74,10 @@ public class CreateAccountService {
 
         }
 
-
-        BankingApp.transactionsMap.put(BankingApp.currentTransactionId,transaction);
+        transactionsMap.put(BankingApp.currentTransactionId,transaction);
 
         if(account !=null ){
-            BankingApp.accountsMap.put(((AbstractAccount) account).getAccountId(), account);
+            accountsMap.put(((AbstractAccount) account).getAccountId(), account);
         }
 
         String customerId = generateCustomerId(BankingApp.currentCustomerId);
@@ -85,7 +90,7 @@ public class CreateAccountService {
         }
 
         ((AbstractCustomer) customer).getCustomerAccounts().add(account);
-        BankingApp.customersMap.put(((AbstractCustomer) customer).getCustomerId(), customer);
+        customersMap.put(((AbstractCustomer) customer).getCustomerId(), customer);
 
         logger.debug("Creating Account...");
         logger.debug("Account Created.");

@@ -1,6 +1,8 @@
 package com.bank;
 
 import com.bank.service.CreateAccountService;
+import com.bank.service.MoneyDepositService;
+import com.bank.service.MoneyWithdrawService;
 import com.bank.service.TransferService;
 import org.apache.log4j.Logger;
 import java.io.*;
@@ -14,14 +16,16 @@ public class BankingApp {
 
     private static final String dateFormat = "dd/MM/yyyy HH-mm-ss";
 
-    public static Map<String, Account> accountsMap = new HashMap<>();
-    public static Map<String, Customer> customersMap = new HashMap<>();
-    public static Map<String, Transaction> transactionsMap = new HashMap<>();
+    public static  Map<String, Account> accountsMap = new HashMap<>();
+    public static  Map<String, Customer> customersMap = new HashMap<>();
+    public static  Map<String, Transaction> transactionsMap = new HashMap<>();
 
 
     public static String currentAccountId = "";
     public static String currentCustomerId = "";
     public static String currentTransactionId = "";
+
+    private static final String ENTER_ACCOUNT_ID = "Enter Account Id: ";
 
 
     public static void main(String[] args) {
@@ -67,7 +71,6 @@ public class BankingApp {
                 break;
             default:
                 logger.debug("Please select right option from below");
-
         }
 
     }
@@ -104,6 +107,9 @@ public class BankingApp {
                                 savingsAccount.setCustomerId(customerId);
                                 accountsMap.put(accountId,savingsAccount);
                                 break;
+
+                            default:
+                                break;
                         }
 
                     }
@@ -136,6 +142,8 @@ public class BankingApp {
                                     personalCustomer.setPhone(customerPhone);
 
                                     customersMap.put(customerId,personalCustomer);
+                                    break;
+                                default:
                                     break;
                             }
                         }
@@ -186,9 +194,12 @@ public class BankingApp {
 
 
         } catch (FileNotFoundException e) {
+            logger.debug("Exception occured "+e);
             e.printStackTrace();
+
         } catch (IOException e) {
             e.printStackTrace();
+            logger.debug("Exception occured "+e);
         }finally {
             try {
                 bufferedReader.close();
@@ -318,108 +329,37 @@ public class BankingApp {
         }
 
         new TransferService().transferMoneyBetweenAccounts(sourceAccount, destinationAccount,money2Withdraw);
-        /*
-        try {
-            sourceAccount.transferMoneyOut(new Double(money2Withdraw));
-            destinationAccount.transferMoneyIn(new Double(money2Withdraw));
 
-            String transactionId = generateTransactionId(sourceAccount.getAccountId());
-            currentTransactionId = transactionId;
-
-            Transaction transaction = new Transaction(transactionId,new Date(),false,  sourceAccount.getAccountBalance(),new Double(money2Withdraw));
-
-            transactionsMap.put(transactionId,transaction);
-            //==========for second transaction
-            transactionId = generateTransactionId(destinationAccount.getAccountId());
-            currentTransactionId = transactionId;
-
-            transaction = new Transaction(transactionId,new Date(),true, destinationAccount.getAccountBalance(),new Double(money2Withdraw));
-
-            transactionsMap.put(transactionId,transaction);
-
-
-        } catch (ExceedingTotalBalanceException e) {
-            logger.debug("Money to withdraw exceeds total balance");
-            e.printStackTrace();
-        } catch (ExceedingDailyLimitException e) {
-            logger.debug("Money to withdraw exceeds daily limit");
-            e.printStackTrace();
-        }
-        logger.debug("Transferring money...");
-        logger.debug("Money Transferred.");
-        logger.debug("Source: AcctId: "+sourceAccount.getAccountId()+", AcctOwner: "+sourceAccount.getCustomerId()+"" +
-                ", AcctBalance: "+sourceAccount.getAccountBalance());
-
-        logger.debug("Destination AcctId: "+destinationAccount.getAccountId()+", AcctOwner: "+destinationAccount.getCustomerId()+"" +
-                ", AcctBalance: "+destinationAccount.getAccountBalance());
-    */
     }
 
     private static void doMoneyWithdraw() {
         logger.debug("Starting Money WithdrawL:");
 
-        String accountID = getAccountIdFromUser("Enter Account Id: ");
+        String accountID = getAccountIdFromUser(ENTER_ACCOUNT_ID);
 
         int money2Withdraw = optionFromUser("Enter money to withdraw:");
 
         AbstractAccount account = (AbstractAccount)accountsMap.get(accountID);
-
-        try {
-            account.transferMoneyOut(new Double(money2Withdraw));
-            logger.debug("Money Withdrawn..");
-
-            String transactionId = generateTransactionId(account.getAccountId());
-            currentTransactionId = transactionId;
-
-            Transaction transaction = new Transaction(transactionId,new Date(),false, account.getAccountBalance(),new Double(money2Withdraw));
-
-            transactionsMap.put(transactionId,transaction);
-        } catch (ExceedingTotalBalanceException e) {
-            logger.debug("Drawn amount is more than total balance");
-            e.printStackTrace();
-        }
-        logger.debug("Showing Account Details:");
-        logger.debug("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
-                ", AcctBalance: "+account.getAccountBalance());
+        new MoneyWithdrawService().withdrawMoney(account,money2Withdraw);
     }
 
     private static void doMoneyDeposit() {
 
         logger.debug("Staring money deposit");
 
-        String accountID = getAccountIdFromUser("Enter Account Id: ");
-
+        String accountID = getAccountIdFromUser(ENTER_ACCOUNT_ID);
 
         int money2Deposit = optionFromUser("Enter money to deposit:");
 
         AbstractAccount account = (AbstractAccount)accountsMap.get(accountID);
-        try {
-            account.transferMoneyIn(new Double(money2Deposit));
-            logger.debug("Money Deposited..");
 
-            String transactionId = generateTransactionId(account.getAccountId());
-            currentTransactionId = transactionId;
-
-            Transaction transaction = new Transaction(transactionId,new Date(),true, account.getAccountBalance(),new Double(money2Deposit));
-
-            transactionsMap.put(transactionId,transaction);
-
-        } catch (ExceedingDailyLimitException e) {
-            logger.debug("Not Able to deposit money, the amount is exceeding Daily Limit");
-            e.printStackTrace();
-        }
-        logger.debug("Showing Account Details:");
-        logger.debug("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
-                ", AcctBalance: "+account.getAccountBalance());
-
+        new MoneyDepositService().depositMoney(account,money2Deposit);
     }
 
     private static void showDetailsOfAccount() {
         logger.debug("Showing account details");
 
-
-        String accountID = getAccountIdFromUser("Enter Account Id: ");
-
+        String accountID = getAccountIdFromUser(ENTER_ACCOUNT_ID);
 
         AbstractAccount account = (AbstractAccount)accountsMap.get(accountID);
 
@@ -440,92 +380,14 @@ public class BankingApp {
         String customerPhone = optionStrFromUser("Enter Customer Phone ");
 
         int typeOfMailPreference = typeOfMailPreference();
-        /*
-        MailPreference mailPreference = null;
-        if(typeOfMailPreference == 1){
-            mailPreference = MailPreference.EMAIL;
-        } else if(typeOfMailPreference == 2){
-            mailPreference = MailPreference.POSTALMAIL;
-        }else if(typeOfMailPreference == 3){
-            mailPreference = MailPreference.TEXTMESSAGE;
-        }
-        */
-        /*BankingApp.accountsMap = */new CreateAccountService().createNewAccount(
+
+        new CreateAccountService().createNewAccount(
                                             customerType, accountType,
                                             customerName,customerAddress,
-                                          customerPhone,typeOfMailPreference
-
-                                            /*BankingApp.accountsMap*/);
-         /*
-        Customer customer = null;
-        if (customerType == 1) {
-            customer = new PersonalCustomer();
-        } else if (customerType == 2) {
-            customer = new BusinessCustomer();
-        }
-
-        ((AbstractCustomer) customer).setName(customerName);
-        ((AbstractCustomer) customer).setAddress(customerAddress);
-        ((AbstractCustomer) customer).setPhone(customerPhone);
-        ((AbstractCustomer) customer).setMailPreference(mailPreference);
-
-
-        String accountId = generateAccountId();
-        BankingApp.currentAccountId = accountId;
-
-        Account account = null;
-        if (accountType == 1) {
-            account = new DebitAccount();
-
-        } else if (accountType == 2) {
-            account = new SavingsAccount();
-
-        }
-        Double amount = 2000.0;
-
-        if(account != null){
-            ((AbstractAccount) account).setAccountId(accountId);
-
-            ((AbstractAccount) account).setAccountBalance(amount);
-        }
-
-
-
-        currentTransactionId = generateTransactionId(BankingApp.currentAccountId);
-
-        Transaction transaction = null;
-        if(account != null){
-            transaction = new Transaction(currentTransactionId,new Date(),true, ((AbstractAccount) account).getAccountBalance(),amount);
-
-        }
-
-
-        transactionsMap.put(currentTransactionId,transaction);
-
-        if(account !=null ){
-            accountsMap.put(((AbstractAccount) account).getAccountId(), account);
-        }
-
-        String customerId = generateCustomerId();
-        currentCustomerId = customerId;
-
-
-        ((AbstractCustomer) customer).setCustomerId(customerId);
-        if(account !=null ) {
-            ((AbstractAccount) account).setCustomerId(customerId);
-        }
-
-        ((AbstractCustomer) customer).getCustomerAccounts().add(account);
-        customersMap.put(((AbstractCustomer) customer).getCustomerId(), customer);
-
-        logger.debug("Creating Account...");
-        logger.debug("Account Created.");
-
-        logger.debug("========Account Details======");
-        logger.debug("Owner Name: "+((AbstractCustomer) customer).getName());
-        logger.debug("AccountId is : " + ((AbstractAccount) account).getAccountId());
-        logger.debug("Account Balance: "+((AbstractAccount)account).getAccountBalance());
-    */
+                                          customerPhone,typeOfMailPreference,
+                BankingApp.accountsMap,BankingApp.customersMap,BankingApp.transactionsMap//,
+                //BankingApp.currentAccountId,BankingApp.currentCustomerId,BankingApp.currentTransactionId
+                );
     }
 
     public static String generateTransactionId(String accountID) {
@@ -566,52 +428,8 @@ public class BankingApp {
 
             }
         }
-
-
-    }
-/*
-    private static String generateAccountId() {
-        String currentAccountIdStr = BankingApp.currentAccountId;
-        String accountIdStr = null;
-        if (currentAccountIdStr == null || currentAccountIdStr.equals("")) {
-            Integer accountNumber = 1;
-            String str = String.format("%05d", accountNumber);
-            accountIdStr = "ACC-" + str;
-        } else {
-            String accountNumberStr = currentAccountIdStr.substring(currentAccountIdStr.indexOf('-') + 1);
-            int accountNumberInt = Integer.parseInt(accountNumberStr);
-            accountNumberInt++;
-            Integer accountNumber = accountNumberInt;
-            String str = String.format("%05d", accountNumber);
-            accountIdStr = "ACC-" + str;
-        }
-
-        return accountIdStr;
-    }
-*/
-/*
-    private static String generateCustomerId() {
-        String currentCustomerIdStr = BankingApp.currentCustomerId;
-        String customerIdStr = null;
-        if (currentCustomerIdStr == null || currentCustomerIdStr.equals("")) {
-            Integer customerNumber = 1;
-
-            String str = String.format("%05d", customerNumber);
-            customerIdStr = "CUST-" + str;
-        } else {
-            String customerNumberStr = currentCustomerIdStr.substring(currentCustomerIdStr.indexOf('-') + 1);
-            int customerNumberInt = Integer.parseInt(customerNumberStr);
-            customerNumberInt++;
-            Integer customerNumber = customerNumberInt;
-
-            String str = String.format("%05d", customerNumber);
-            customerIdStr = "CUST-" + str;
-        }
-
-        return customerIdStr;
     }
 
- */
     private static String getAccountIdFromUser(String  str2Display) {
         while (true) {
             String accountId = optionStrFromUser(str2Display);
