@@ -1,10 +1,14 @@
 package com.bank.dao;
 
-import com.bank.Transaction;
+import com.bank.*;
 import com.bank.util.DAOUtils;
 
 import java.sql.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class TransactionDAO {
 
@@ -53,6 +57,50 @@ public class TransactionDAO {
                 e.printStackTrace();
             }
         }
+    }
+
+    public List<Transaction> getAllTransactionList(Connection connection) {
+
+        String query = "select * from TRANSACTIONS";
+        List<Transaction> transactionList = new ArrayList<>();
+
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Transaction transaction = new Transaction();
+                transaction.setTransactionId(rs.getString("transaction_id"));
+                transaction.setBalance(rs.getDouble("balance"));
+                String txnDateStr = rs.getString("date");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+                Date txnDate = null;
+                try {
+                    txnDate = simpleDateFormat.parse(txnDateStr);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                transaction.setDate(txnDate);
+                boolean isDebit = rs.getString("debit_credit").equalsIgnoreCase("debit")?true:false;
+                transaction.setDebit(isDebit);
+
+                transactionList.add(transaction);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return transactionList;
     }
 }
 

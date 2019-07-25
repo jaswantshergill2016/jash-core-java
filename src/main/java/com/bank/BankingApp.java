@@ -63,10 +63,12 @@ public class BankingApp {
                 transferMoneyBetweenDBAccounts();
                 break;
             case 7:
-                printTransactionsOfAccount();
+                //printTransactionsOfAccount();
+                printTransactionsOfAccountInDB();
                 break;
             case 8:
-                printAllAccountDetailsInBank();
+                //printAllAccountDetailsInBank();
+                printAllAccountDetailsInBankInDB();
                 break;
             case 9:
                 logger.debug("Exiting from banking service");
@@ -353,6 +355,12 @@ public class BankingApp {
         }
     }
 
+    private static void printAllAccountDetailsInBankInDB(){
+        logger.debug("Starting to show all Account Details in DB:");
+        new AccountDetailsService().printAllAccountDetails();
+
+    }
+
     private static void printAllAccountDetailsInBank() {
         logger.debug("Starting to show all Account Details:");
         logger.debug("Showing "+accountsMap.size()+" Accounts Details:");
@@ -365,6 +373,11 @@ public class BankingApp {
             logger.debug("AcctId: "+account.getAccountId()+", AcctOwner: "+account.getCustomerId()+"" +
                     ", AcctBalance: "+account.getAccountBalance());
         }
+    }
+
+    private static void printTransactionsOfAccountInDB(){
+        logger.debug("============printing transactions ==================");
+        new TransactionService().printAllTransactions();
     }
 
     private static void printTransactionsOfAccount() {
