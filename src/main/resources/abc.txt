@@ -1,0 +1,347 @@
+SOAP services
+https://smartbear.com/blog/test-and-monitor/understanding-soap-and-rest-basics/
+https://www.upwork.com/hiring/development/soap-vs-rest-comparing-two-apis/
+
+
+
+Canada post developer program
+
+You have successfully joined the program.
+
+
+
+
+API Keys
+Name	Key Number (username : password)	Status	New Passkey
+Development	181098838eee17a4 : f9be2b4fa8314e54811a66	Active	Regenerate
+Production	377f10ed0a43c7ba : a9ebeb44dd18b807062db2	Active
+
+join the Canada Post Developer program
+https://www.canadapost.ca/cpo/mc/business/productsservices/developers/services/soap/fundamentals.jsf
+https://www.canadapost.ca/cpo/mc/business/productsservices/developers/services/soapuidemo.jsf#table_4
+ https://www.codeguru.com/java/article.php/c13529/XSD-Tutorial-XML-Schemas-For-Beginners.htm#page-1
+
+application/vnd.cpc.postoffice+xml
+application/json
+
+
+curl -X POST -H "Content-Type: text/xml" \
+    -H 'SOAPAction: "http://www.canadapost.ca/ws/soap/postoffice/GetNearestPostOffice"' \
+    --data-binary @request.xml \
+    https://ct.soa-gw.canadapost.ca/rs/soap/postoffice
+
+
+curl  -X POST -H "Content-Type: text/xml" \
+    -H 'SOAPAction: "http://www.canadapost.ca/ws/soap/postoffice/GetNearestPostOffice"' \
+    --data-binary @request.xml --user "81098838eee17a4:f9be2b4fa8314e54811a66" \
+    https://ct.soa-gw.canadapost.ca/rs/soap/postoffice
+
+curl  -X POST -H "Content-Type: text/xml" \
+    -H 'SOAPAction: "http://www.canadapost.ca/ws/soap/postoffice/GetNearestPostOffice"' \
+    --data-binary @request.xml  \
+    https://ct.soa-gw.canadapost.ca/rs/soap/postoffice
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:tns="http://www.canadapost.ca/ws/soap/postoffice" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Header/><soapenv:Body><tns:get-nearest-post-office-response><post-office-list><post-office><address><latitude>43.70610</latitude><longitude>-79.34630</longitude><office-address>45 OVERLEA BLVD</office-address><city>TORONTO</city><province>ON</province><postal-code>M4H1C0</postal-code></address><distance>0.3</distance><location>EAST YORK PO</location><name>SHOPPERS DRUG MART #0871</name><office-id>0000103346</office-id><bilingual-designation>false</bilingual-designation></post-office><post-office><address><latitude>43.71360</latitude><longitude>-79.33480</longitude><office-address>747 DON MILLS RD</office-address><city>DON MILLS</city><province>ON</province><postal-code>M3C1S0</postal-code></address><distance>1.5</distance><location>FLEMINGDON PO</location><name>SHOPPERS DRUG MART #1516</name><office-id>0000102831</office-id><bilingual-designation>false</bilingual-designation></post-office></post-office-list></tns:get-nearest-post-office-response></soapenv:Body></soapenv:Envelope>%
+
+
+https://stackoverflow.com/questions/9062475/what-is-the-difference-between-document-style-and-rpc-style-communication
+
+https://www.ibm.com/developerworks/library/ws-whichwsdl/
+
+
+4.1. Definitions
+The definitions element is the root element of all WSDL documents. It defines the name, the namespace, etc. of the service and, as you can see, can be quite spacious:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12	<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://services.reactivestax.io/"
+  xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata"
+  xmlns:wsp="http://www.w3.org/ns/ws-policy"
+  xmlns:wsp1_2="http://schemas.xmlsoap.org/ws/2004/09/policy"
+  xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://services.reactivestax.io/"
+  name="EmployeeService">
+  ...
+</definitions>
+
+
+4.2. Types
+The types element defines the data types used by the web service. WSDL uses XSD (XML Schema Definition) as the type system which helps with interoperability:
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10	<definitions ...>
+    ...
+    <types>
+        <xsd:schema>
+            <xsd:import namespace="http://jaxws.reactivestax.com/"
+              schemaLocation = "http://localhost:8080/employeeservice?xsd=1" />
+        </xsd:schema>
+    </types>
+    ...
+</definitions>
+
+
+
+4.3. Messages
+The message element provides an abstract definition of the data being transmitted. Each message element describes the input or output of a service method and the possible exceptions:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13	<definitions ...>
+    ...
+    <message name="getEmployee">
+        <part name="parameters" element="tns:getEmployee" />
+    </message>
+    <message name="getEmployeeResponse">
+        <part name="parameters" element="tns:getEmployeeResponse" />
+    </message>
+    <message name="EmployeeNotFound">
+        <part name="fault" element="tns:EmployeeNotFound" />
+    </message>
+    ...
+</definitions>
+
+
+
+4.4. Operations and Port Types
+The portType element describes each operation that can be performed and all the messageelements involved. For example, the getEmployee operation specifies the request input, output and possible fault exception thrown by the web service operation:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17	<definitions ...>
+    ...
+    <portType name="EmployeeService">
+        <operation name="getEmployee">
+            <input
+              wsam:Action="http://jaxws.baeldung.com/EmployeeService/getEmployeeRequest"
+              message="tns:getEmployee" />
+            <output
+              wsam:Action="http://jaxws.baeldung.com/EmployeeService/getEmployeeResponse"
+              message="tns:getEmployeeResponse" />
+            <fault message="tns:EmployeeNotFound" name="EmployeeNotFound"
+              wsam:Action="http://jaxws.baeldung.com/EmployeeService/getEmployee/Fault/EmployeeNotFound" />
+        </operation>
+    ....
+    </portType>
+    ...
+</definitions>
+
+
+4.5. Bindings
+The binding element provides protocol and data format details for each portType:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22	<definitions ...>
+    ...
+    <binding name="EmployeeServiceImplPortBinding"
+      type="tns:EmployeeService">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+          style="document" />
+        <operation name="getEmployee">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="EmployeeNotFound">
+                <soap:fault name="EmployeeNotFound" use="literal" />
+            </fault>
+        </operation>
+        ...
+    </binding>
+    ...
+</definitions>
+
+
+4.6. Services and Ports
+The service element defines the ports supported by the web service. The port element in service defines the name, binding and the address of the service:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11	<definitions ...>
+    ...
+    <service name="EmployeeService">
+        <port name="EmployeeServiceImplPort"
+          binding="tns:EmployeeServiceImplPortBinding">
+            <soap:address
+              location="http://localhost:8080/employeeservice" />
+        </port>
+    </service>
+    ...
+</definitions>
+
+
+
+
+
+
+Actual service implementation (for calculator) using apache cxf
+origin	git@bitbucket.org:reactivestaxlabs/springboot-cxf-ws-bk.git
+
+
+REST wrapper calling DNEonline calculator (SAOP Service)
+origin	git@bitbucket.org:reactivestaxlabs/calculator-jaxws-springws-service.git
+
+
+For Canada posts , you can call SOAP or REST endpoints
+
+
+
+Two things we are leaving
+
+Is a) SSL Context for 2 way SSL
+    b) Spring-WS story
+     c) JAX-RS story   [[ we are using Spring Boot to write REST services ]]
+
+For JAx-WS we are using Apache CXF with JAxWS front and its spring-boot-starter
+Apache CXF lets you write SOAP services that run in Tomcat server or with sprig boot
+Spring-WS also does the same thing
+Apache AXIS —
+
+
+
+- [ ] Create empty spring boot project —
+- [ ] Put in the wsdl file from dneonline to src/main/resources/wsdl
+- [ ] Mvn package , it will generate the code in target/generated-sources folder   in wsimport/org/.*
+
+- [ ] Code your spring boot app —> calculator controller —> calculator service —> JAXWSService client —> uses calculator.getSoap().add()
+
+- [ ] REST Tempate for calling REST APIs
+- [ ] JAXWs client    service.getPort.add/divide
+
+JAX-WS command line
+wsimport -keep -verbose http://compA.com/ws/server?wsdl
+
+
+Swagger codeine command line
+
+1. wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/2.2.1/swagger-codegen-cli-2.2.1.jar
+
+
+swagger-codegen generate -i http://petstore.swagger.io/v2/swagger.json -l java.
+Else, you could use:
+
+swagger-codegen  generate -i ~/Downloads/swagger.json -l java  -o ~/source/swagger-gen-2 --api-package  com.reactivestax.api  --model-package com.reactivestax.model
+
+
+
+SWAGGER
+<dependency>
+    <groupId>io.swagger.codegen.v3</groupId>
+    <artifactId>swagger-codegen-maven-plugin</artifactId>
+    <version>3.0.10</version>
+</dependency>
+
+JAXf-WS
+
+<plugin>
+  <groupId>org.jvnet.jax-ws-commons</groupId>
+  <artifactId>jaxws-maven-plugin</artifactId>
+  <version>2.3</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>wsimport</goal>
+      </goals>
+      <configuration>
+
+
+          <wsdlFiles>
+              <wsdlFile>${project.basedir}/src/main/resources/wsdl/calculator_1.wsdl</wsdlFile>
+            <wsdlFile>${project.basedir}/src/main/resources/wsdl/postoffice.wsdl</wsdlFile>
+
+          </wsdlFiles>
+
+          <!--
+        <wsdlUrls>
+          <wsdlUrl>http://www.dneonline.com/calculator.asmx?WSDL</wsdlUrl>
+        </wsdlUrls>
+        -->
+        <vmArgs>
+          <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+        </vmArgs>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+
+
+
+
+
+—————————————
+
+REGISTER ON CANADA POST THEN CALL USING SOAP PROJECT AND REST PROJECT
+
+ROBIN TO SHARE THE WORKING SOAPUI PROJECTS FOR CANADA POST AND LOCAL CALCULATOR APIS

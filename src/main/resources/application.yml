@@ -1,0 +1,59 @@
+management.security.enabled: false
+
+app.welcome.message: Welcome to Reactivestax Traning Course
+
+swagger.enable: true
+
+endpoints.enabled: true
+
+
+api:
+  title: "ReactiveStax Education Services"
+  description: "ReactiveStax Education Services"
+  version: 1.0
+  terms-of-service-url: "ReactiveStax terms and conditions"
+  contact: "learn@reactivestax.io"
+  email: learn@reactivestax.io
+  url: https://www.reactivestax.io
+  license: "ReactiveStax Education API License"
+  license-url: https://www.reactivestax.io
+
+#server.port: 18443
+#server.ssl.key-store: /chrome-downloads/test-keystore.jks
+#server.ssl.key-store-password: Father@123
+#server.ssl.keyStoreType: JKS
+#server.ssl.keyAlias: reactivestax
+
+application:
+   service:
+       soap-endpoint: http://www.dneonline.com/calculator.asmx
+   max-connection-count: 10
+   max-per-route: 10
+
+keystore:
+  file: keyStore.jks
+  type: JKS
+  pass: Midtier@123
+truststore:
+  file: trustStore.jks
+  type: JKS
+  pass: changeit
+
+logging:
+  level: 
+     ROOT: ERROR
+     io.reactivestax: DEBUG
+     org.springframework.web: DEBUG
+     org.apache.http.headers: DEBUG
+     org.springframework.ws: TRACE
+pattern:
+  console: "%d %-5level %logger : %msg%n"
+  file: "%d %-5level [%thread] %logger : %msg%n"
+
+---
+spring:
+    profiles: default
+---
+spring:
+   profiles: PROD
+swagger.enable: false
