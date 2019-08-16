@@ -1,0 +1,45 @@
+logging:
+  level:
+    ROOT: ERROR
+    io.reactivestax: DEBUG
+    org.springframework: ERROR
+    org.springframework.boot.context.config: DEBUG
+    org.springframework.data: DEBUG
+pattern:
+  console: "%d %-5level %logger : %msg%n"
+
+api:
+  title: "Full Stack Labs Inc"
+  description: "Full Stack Labs Inc"
+  version: 1.0
+  terms-of-service-url: "Full Stack Labs terms and conditions"
+  contact: "brij@fullstacklabs.ca"
+  email: brij@fullstacklabs.ca
+  url: https://www.fullstacklabs.ca
+  license: "Full Stack Labs API License"
+  license-url: https://www.fullstacklabs.ca
+
+
+spring.datasource:
+  url: jdbc:mysql://localhost:3306/profilemgmt?serverTimezone=EST5EDT&useSSL=false
+  username: root
+  password: bootcamp
+
+
+management.endpoints:
+# disable beans endpoint
+  beans.enabled: true
+  # expose all endpoints:
+  web.exposure.include: "*"
+
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  jackson:
+    property-naming-strategy: KEBAB_CASE
