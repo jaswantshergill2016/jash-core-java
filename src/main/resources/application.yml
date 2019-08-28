@@ -1,0 +1,14 @@
+server.port: 9090
+logging.level.org.springframework.ws: TRACE
+developer.program:
+  username: admin
+  password: secret
+
+
+client:
+  default-uri: https://localhost:8899/service/track-springws/
+  ssl:
+    trust-store: classpath:jks/client-truststore.jks
+    trust-store-password: client-truststore-p455w0rd
+
+#debug: true
