@@ -11,4 +11,8 @@ client:
     trust-store: classpath:jks/client-truststore.jks
     trust-store-password: client-truststore-p455w0rd
 
+    key-store: classpath:jks/client-keystore.jks
+    key-store-password: client-keystore-p455w0rd
+    key-password: client-key-p455w0rd
+
 #debug: true

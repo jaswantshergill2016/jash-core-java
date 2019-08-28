@@ -17,7 +17,7 @@ import javax.net.ssl.SSLContext;
 
 @Configuration
 public class Config {
-
+/*
     @Value("${client.default-uri}")
     private String defaultUri;
 
@@ -26,6 +26,24 @@ public class Config {
 
     @Value("${client.ssl.trust-store-password}")
     private String trustStorePassword;
+*/
+    @Value("${client.default-uri}")
+    private String defaultUri;
+
+    @Value("${client.ssl.trust-store}")
+    private Resource trustStore;
+
+    @Value("${client.ssl.trust-store-password}")
+    private String trustStorePassword;
+
+    @Value("${client.ssl.key-store}")
+    private Resource keyStore;
+
+    @Value("${client.ssl.key-store-password}")
+    private String keyStorePassword;
+
+    @Value("${client.ssl.key-password}")
+    private String keyPassword;
 
     @Bean
     Jaxb2Marshaller jaxb2Marshaller() {
@@ -69,6 +87,8 @@ public class Config {
 
     public SSLContext sslContext() throws Exception {
         return SSLContextBuilder.create()
+                .loadKeyMaterial(keyStore.getFile(), keyStorePassword.toCharArray(),
+                        keyPassword.toCharArray())
                 .loadTrustMaterial(trustStore.getFile(), trustStorePassword.toCharArray()).build();
     }
 }
