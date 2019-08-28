@@ -5,8 +5,10 @@ logging.level.com.reactivestax: DEBUG
 server:
   ssl:
     #enabled: true
-    client-auth: want
+    client-auth: need
     key-store: classpath:jks/server-keystore.jks
     key-store-password: server-keystore-p455w0rd
     key-alias: server-keypair
     key-password: server-key-p455w0rd
+    trust-store: classpath:jks/server-truststore.jks
+    trust-store-password: server-truststore-p455w0rd
