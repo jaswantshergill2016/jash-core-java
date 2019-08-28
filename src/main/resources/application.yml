@@ -1,0 +1,12 @@
+server.port: 8899
+logging.level.org.springframework.ws: TRACE
+logging.level.com.reactivestax: DEBUG
+
+server:
+  ssl:
+    #enabled: true
+    client-auth: want
+    key-store: classpath:jks/server-keystore.jks
+    key-store-password: server-keystore-p455w0rd
+    key-alias: server-keypair
+    key-password: server-key-p455w0rd
