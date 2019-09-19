@@ -28,10 +28,16 @@ api:
   license-url: https://www.fullstacklabs.ca
 
 
-spring.datasource:
-  url: jdbc:mysql://localhost:3306/profilemgmt?serverTimezone=EST5EDT&useSSL=false
-  username: root
-  password: bootcamp
+#spring.datasource:
+#  url: jdbc:mysql://localhost:3306/profilemgmt?serverTimezone=EST5EDT&useSSL=false
+#  username: root
+#  password: bootcamp
+  
+spring.dataSource:
+  driverClassName: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:profilemgmt}?serverTimezone=EST5EDT&useSSL=false
+  username: ${MYSQL_USER:root}
+  password: ${MYSQL_PASSWORD:bootcamp}
 
 
 management.endpoints:
