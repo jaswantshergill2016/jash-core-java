@@ -1,18 +1,18 @@
 logging:
   level:
-    ROOT: DEBUG
-    io.reactivestax: TRACE
-    org.springframework: ERROR
-    org.springframework.boot.context.config: DEBUG
-    org.springframework.data: DEBUG
-    org.springframework.ws.client.MessageTracing.sent: TRACE
-    org.springframework.ws.client.MessageTracing.received: TRACE
-    org.springframework.ws.server.MessageTracing.sent: TRACE
-    org.springframework.ws.server.MessageTracing.received: TRACE
-    org.apache.http.headers: TRACE
-    org.apache.http: TRACE
-    org.apache.http.wire: TRACE
-    org.apache.wss4j: TRACE
+    ROOT: ERROR
+    io.reactivestax: DEBUG
+    #org.springframework: ERROR
+    #org.springframework.boot.context.config: DEBUG
+    #org.springframework.data: DEBUG
+    #org.springframework.ws.client.MessageTracing.sent: TRACE
+    #org.springframework.ws.client.MessageTracing.received: TRACE
+    #org.springframework.ws.server.MessageTracing.sent: TRACE
+    #org.springframework.ws.server.MessageTracing.received: TRACE
+    #org.apache.http.headers: TRACE
+    #org.apache.http: TRACE
+    #org.apache.http.wire: TRACE
+    #org.apache.wss4j: TRACE
 pattern:
   console: "%d %-5level %logger : %msg%n"
 
