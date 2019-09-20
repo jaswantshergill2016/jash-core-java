@@ -1,0 +1,215 @@
+version: '3'
+services:
+
+    rabbitmq:
+      container_name: rabbitmq
+      image: 'rabbitmq:management'
+      environment:
+        - RABBITMQ_DEFAULT_USER=guest
+        - RABBITMQ_DEFAULT_PASS=guest
+      ports:
+        - "5672:5672"
+        - "15672:15672"
+
+    mysql:
+      image: 'mysql:8.0'
+      container_name: mysql8.0
+      ports:
+        - "3306:3306"
+      environment:
+        - MYSQL_DATABASE=profilemgmt
+        - MYSQL_USER=myroot
+        - MYSQL_PASSWORD=bootcamp
+        - MYSQL_ROOT_PASSWORD=bootcamp
+        - TZ=UTC
+      expose:
+        - '3306'
+      volumes:
+        - db_data:/var/lib/mysql
+
+
+    zipkin-server:
+      container_name: zipkin-server
+      build:
+        context: ./zipkin-server
+        dockerfile: Dockerfile
+      ports:
+        - "9411:9411"
+      depends_on:
+        - rabbitmq
+      entrypoint: /bin/sh
+      command:
+        -c "
+        while ! (nc -z rabbitmq 5672 ); do sleep 5; echo 'Waiting for rabbitmq service to start-up...'; done;
+        java -jar /opt/spring-cloud/lib/spring-cloud-zipkin-server.jar
+        "
+
+    config-server:
+      container_name: config-server
+      build:
+        context: ./config-server
+        dockerfile: Dockerfile
+      environment:
+        SPRING_APPLICATION_JSON: '{"spring.rabbitmq.host": "rabbitmq"}'
+      ports:
+        - "8888:8888"
+      depends_on:
+        - rabbitmq
+        - zipkin-server
+      entrypoint: /bin/sh
+      command:
+        -c "
+        while ! (nc -z rabbitmq 5672 && nc -z zipkin-server 9411); do sleep 5; echo 'Waiting for rabbitmq & zipkin-server to start-up...'; done;
+        java -jar /opt/spring-cloud/lib/spring-cloud-config-server.jar
+        "
+#      command:
+#        -c "
+#        java -jar /opt/spring-cloud/lib/spring-cloud-config-server.jar
+#        "
+
+    eureka-server:
+      container_name: eureka-server
+      build:
+        context: ./eureka-server
+        dockerfile: Dockerfile
+      environment:
+        SPRING_APPLICATION_JSON: '{"spring.zipkin.base-url": "http://zipkin-server:9411"}'
+      ports:
+        - "8761:8761"
+      depends_on:
+        - rabbitmq
+        - zipkin-server
+        - config-server
+      entrypoint: /bin/sh
+      command:
+          -c "
+          while ! (nc -z rabbitmq 5672 && nc -z zipkin-server 9411 && nc -z config-server 8888); do sleep 5; echo 'Waiting for rabbitmq & zipkin-server & config-server to start-up...'; done;
+          java -jar /opt/spring-cloud/lib/spring-cloud-eureka-server.jar
+          "
+
+    reference-data-services:
+      container_name: reference-data-services
+      build:
+        context: ./reference-data-services
+        dockerfile: Dockerfile
+      #environment:
+      #  SPRING_APPLICATION_JSON: '{"eureka.client.service-url.defaultZone":"http://eureka-server:8761/eureka/", "spring.zipkin.base-url": "http://zipkin-server:9411"}'
+      ports:
+        - "8181:8181"
+      depends_on:
+        - rabbitmq
+        - mysql
+        - zipkin-server
+        - config-server
+        - eureka-server
+      entrypoint: /bin/sh
+      environment:
+          - MYSQL_HOST=mysql
+          - MYSQL_DATABASE=profilemgmt
+          - MYSQL_USER=myroot
+          - MYSQL_PASSWORD=bootcamp
+          - MYSQL_PORT=3306
+          - ZIPKIN_SERVER=zipkin-server
+          - CONFIG_SERVER=config-server
+          - EUREKA_SERVER=eureka-server
+      command:
+          -c "
+          while ! (nc -z rabbitmq 5672 && nc -z zipkin-server 9411 && nc -z config-server 8888 && nc -z eureka-server 8761); do sleep 5; echo 'Waiting for rabbitmq & zipkin-server & config-server & eureka-server to start-up...'; done;
+          java -jar /opt/spring-cloud/lib/Rest-EndPoints-ExpenseModel-0.0.1-SNAPSHOT.jar
+          "
+
+    invoiceservice:
+      container_name: invoiceservice
+      build:
+        context: ./InvoiceService
+        dockerfile: Dockerfile
+      #environment:
+      #  SPRING_APPLICATION_JSON: '{"eureka.client.service-url.defaultZone":"http://eureka-server:8761/eureka/", "spring.zipkin.base-url": "http://zipkin-server:9411"}'
+      ports:
+        - "8383:8383"
+      depends_on:
+        - rabbitmq
+        - mysql
+        - zipkin-server
+        - config-server
+        - eureka-server
+      entrypoint: /bin/sh
+      environment:
+        - MYSQL_HOST=mysql
+        - MYSQL_DATABASE=profilemgmt
+        - MYSQL_USER=myroot
+        - MYSQL_PASSWORD=bootcamp
+        - MYSQL_PORT=3306
+        - ZIPKIN_SERVER=zipkin-server
+        - CONFIG_SERVER=config-server
+        - EUREKA_SERVER=eureka-server
+      command:
+        -c "
+        while ! (nc -z rabbitmq 5672 && nc -z zipkin-server 9411 && nc -z config-server 8888 && nc -z eureka-server 8761); do sleep 5; echo 'Waiting for rabbitmq & zipkin-server & config-server & eureka-server to start-up...'; done;
+        java -jar /opt/spring-cloud/lib/InvoiceService-0.0.1-SNAPSHOT.jar
+        "
+
+    paymentservice:
+      container_name: paymentservice
+      build:
+        context: ./PaymentService
+        dockerfile: Dockerfile
+      #environment:
+      #  SPRING_APPLICATION_JSON: '{"eureka.client.service-url.defaultZone":"http://eureka-server:8761/eureka/", "spring.zipkin.base-url": "http://zipkin-server:9411"}'
+      ports:
+        - "8484:8484"
+      depends_on:
+        - rabbitmq
+        - mysql
+        - zipkin-server
+        - config-server
+        - eureka-server
+      entrypoint: /bin/sh
+      environment:
+        - MYSQL_HOST=mysql
+        - MYSQL_DATABASE=profilemgmt
+        - MYSQL_USER=myroot
+        - MYSQL_PASSWORD=bootcamp
+        - MYSQL_PORT=3306
+        - ZIPKIN_SERVER=zipkin-server
+        - CONFIG_SERVER=config-server
+        - EUREKA_SERVER=eureka-server
+      command:
+        -c "
+        while ! (nc -z rabbitmq 5672 && nc -z zipkin-server 9411 && nc -z config-server 8888 && nc -z eureka-server 8761); do sleep 5; echo 'Waiting for rabbitmq & zipkin-server & config-server & eureka-server to start-up...'; done;
+        java -jar /opt/spring-cloud/lib/PaymentService-0.0.1-SNAPSHOT.jar
+        "
+
+    expenseservice:
+      container_name: expenseservice
+      build:
+        context: ./ExpenseService
+        dockerfile: Dockerfile
+      #environment:
+      #  SPRING_APPLICATION_JSON: '{"eureka.client.service-url.defaultZone":"http://eureka-server:8761/eureka/", "spring.zipkin.base-url": "http://zipkin-server:9411"}'
+      ports:
+        - "8282:8282"
+      depends_on:
+        - rabbitmq
+        - mysql
+        - zipkin-server
+        - config-server
+        - eureka-server
+      entrypoint: /bin/sh
+      environment:
+        - MYSQL_HOST=mysql
+        - MYSQL_DATABASE=profilemgmt
+        - MYSQL_USER=myroot
+        - MYSQL_PASSWORD=bootcamp
+        - MYSQL_PORT=3306
+        - ZIPKIN_SERVER=zipkin-server
+        - CONFIG_SERVER=config-server
+        - EUREKA_SERVER=eureka-server
+      command:
+        -c "
+        while ! (nc -z rabbitmq 5672 && nc -z zipkin-server 9411 && nc -z config-server 8888 && nc -z eureka-server 8761); do sleep 5; echo 'Waiting for rabbitmq & zipkin-server & config-server & eureka-server to start-up...'; done;
+        java -jar /opt/spring-cloud/lib/ExpenseService-0.0.1-SNAPSHOT.jar
+        "
+
+volumes:
+  db_data: {}

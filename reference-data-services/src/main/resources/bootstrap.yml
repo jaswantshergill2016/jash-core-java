@@ -1,0 +1,11 @@
+server.port: 8181
+spring.application.name: referencedataservice
+spring.cloud.config.uri: http://${CONFIG_SERVER:localhost}:8888
+management.security.enabled: false
+
+eureka.client.service-url.defaultZone: http://${EUREKA_SERVER:localhost}:8761/eureka/
+spring.zipkin.base-url: http://${ZIPKIN_SERVER:localhost}:9411/
+#Sleuth
+spring.sleuth.sampler.percentage: 1.0
+#Zipkin
+spring.zipkin.sender.type: web

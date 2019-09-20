@@ -1,0 +1,24 @@
+spring.application.name: spring-cloud-config-server
+server.port: 8888
+#spring.cloud.config.server.git.uri: https://github.com/leofoto/spring-cloud-config2.git
+#spring.cloud.config.server.git.username: leofoto
+#spring.cloud.config.server.git.password: bootcamp@123
+#spring.cloud.config.server.git.default-label: branch1
+
+spring.cloud.config.server.git.uri: https://jaswantshergill@bitbucket.org/reactivestaxlabs/jash-core-java.git
+spring.cloud.config.server.git.username: jaswantshergill2016@gmail.com
+spring.cloud.config.server.git.password: ddgn@1313
+spring.cloud.config.server.git.default-label: sping-cloud-configuration-only
+
+
+management.security.enabled: false
+
+
+spring.cloud.bus.enabled: true
+#When the webhook is activated, the Config Server sends a RefreshRemoteApplicationEvent
+#  targeting the applications that the property changes should be reflected.
+####
+spring.rabbitmq.host: localhost
+spring.rabbitmq.port: 5672
+spring.rabbitmq.username: guest
+spring.rabbitmq.password: guest
