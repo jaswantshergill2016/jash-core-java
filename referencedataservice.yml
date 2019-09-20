@@ -35,7 +35,7 @@ api:
   
 spring.dataSource:
   driverClassName: com.mysql.cj.jdbc.Driver
-  url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:profilemgmt}?serverTimezone=EST5EDT&useSSL=false
+  url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:profilemgmt}?serverTimezone=EST5EDT&allowPublicKeyRetrieval=true&useSSL=false
   username: ${MYSQL_USER:root}
   password: ${MYSQL_PASSWORD:bootcamp}
 
