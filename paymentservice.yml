@@ -1,18 +1,18 @@
 logging:
   level:
-    ROOT: DEBUG
-    io.reactivestax: TRACE
-    org.springframework: ERROR
-    org.springframework.boot.context.config: DEBUG
-    org.springframework.data: DEBUG
-    org.springframework.ws.client.MessageTracing.sent: TRACE
-    org.springframework.ws.client.MessageTracing.received: TRACE
-    org.springframework.ws.server.MessageTracing.sent: TRACE
-    org.springframework.ws.server.MessageTracing.received: TRACE
-    org.apache.http.headers: TRACE
-    org.apache.http: TRACE
-    org.apache.http.wire: TRACE
-    org.apache.wss4j: TRACE
+    ROOT: ERROR
+    io.reactivestax: DEBUG
+    #org.springframework: ERROR
+    #org.springframework.boot.context.config: DEBUG
+    #org.springframework.data: DEBUG
+    #org.springframework.ws.client.MessageTracing.sent: TRACE
+    #org.springframework.ws.client.MessageTracing.received: TRACE
+    #org.springframework.ws.server.MessageTracing.sent: TRACE
+    #org.springframework.ws.server.MessageTracing.received: TRACE
+    #org.apache.http.headers: TRACE
+    #org.apache.http: TRACE
+    #org.apache.http.wire: TRACE
+    #org.apache.wss4j: TRACE
 pattern:
   console: "%d %-5level %logger : %msg%n"
 
@@ -28,10 +28,16 @@ api:
   license-url: https://www.fullstacklabs.ca
 
 
-spring.datasource:
-  url: jdbc:mysql://localhost:3306/profilemgmt?serverTimezone=EST5EDT&useSSL=false
-  username: root
-  password: bootcamp
+#spring.datasource:
+#  url: jdbc:mysql://localhost:3306/profilemgmt?serverTimezone=EST5EDT&useSSL=false
+#  username: root
+#  password: bootcamp
+spring.dataSource:
+  driverClassName: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:profilemgmt}?serverTimezone=EST5EDT&allowPublicKeyRetrieval=true&useSSL=false
+  username: ${MYSQL_USER:root}
+  password: ${MYSQL_PASSWORD:bootcamp}
+
 
 
 management.endpoints:
