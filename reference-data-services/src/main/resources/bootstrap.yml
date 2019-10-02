@@ -9,3 +9,5 @@ spring.zipkin.base-url: http://${ZIPKIN_SERVER:localhost}:9411/
 spring.sleuth.sampler.percentage: 1.0
 #Zipkin
 spring.zipkin.sender.type: web
+
+

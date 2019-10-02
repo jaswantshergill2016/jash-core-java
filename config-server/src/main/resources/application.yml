@@ -13,6 +13,13 @@ spring.cloud.config.server.git.default-label: sping-cloud-configuration-only
 
 management.security.enabled: false
 
+#spring:
+#  cloud:
+#    config:
+#      server:
+#        git:
+#          skip-ssl-validation: true
+
 
 spring.cloud.bus.enabled: true
 #When the webhook is activated, the Config Server sends a RefreshRemoteApplicationEvent

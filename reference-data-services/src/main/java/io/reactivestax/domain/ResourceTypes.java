@@ -28,7 +28,7 @@ public class ResourceTypes {
     private String resourceNickName;
     @JsonIgnore
     private Date createdDt = new Date();
-    @JsonIgnore
+
     private Integer createdBy;
 
     public ResourceTypes() {

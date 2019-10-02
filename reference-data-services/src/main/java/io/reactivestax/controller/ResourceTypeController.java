@@ -5,9 +5,13 @@ package io.reactivestax.controller;
 //import io.reactivestax.api.model.RestApiStatus;
 
 //import com.reactivestax.domain.ResourceTypes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.reactivestax.constants.ApiStatus;
 //import io.reactivestax.domain.ResourceTypes;
 import io.reactivestax.domain.ResourceTypes;
+import io.reactivestax.jmssender.Audits;
+import io.reactivestax.jmssender.Sender;
 import io.reactivestax.model.RequestMetadata;
 import io.reactivestax.model.RestApiResponse;
 import io.reactivestax.model.RestApiStatus;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 //import io.reactivestax.exception.handler.UserNotFoundException;
 //import io.reactivestax.service.UsersManagerService;
@@ -38,6 +43,9 @@ public class ResourceTypeController {
 
 //    @Autowired
 //    private UsersManagerService usersManagerService;
+
+    @Autowired
+    private Sender sender;
 
     @Autowired
     private VendorService vendorService;
@@ -102,11 +110,10 @@ public class ResourceTypeController {
         log.debug("Request metadata {} ",requestMetadata);
 
         RestApiResponse<RestApiStatus,ResourceTypes> apiResponse = new RestApiResponse<>();
-        //usersManagerService.registerUser(user);
         resourceTypeService.createResourceType(resourceTypes);
+
         RestApiStatus restApiStatus = RequestUtils.buildRestApiStatus(requestMetadata.getRequestId(), ApiStatus.USER_CREATED, HttpStatus.CREATED);
         apiResponse.setStatus(restApiStatus);
-        //vendors = new Vendors("vendor name 1", "vendor code 1",1);
         apiResponse.setResponse(resourceTypes);
 
         ResponseEntity<RestApiResponse<RestApiStatus,ResourceTypes>> responseEntity = new ResponseEntity<>(apiResponse,HttpStatus.CREATED);
