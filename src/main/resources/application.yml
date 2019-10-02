@@ -1,0 +1,30 @@
+#activemq:
+#  broker-url: tcp://localhost:61616
+
+
+
+destination:
+  input-queue: input-queue
+  output-queue: output-queue
+
+spring.datasource:
+  url: jdbc:mysql://localhost:3306/profilemgmt?serverTimezone=EST5EDT&useSSL=false
+  username: root
+  password: bootcamp
+
+spring:
+  activemq:
+    broker-url: tcp://localhost:61616
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
