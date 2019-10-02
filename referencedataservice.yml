@@ -63,6 +63,6 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
-  jackson:
-    property-naming-strategy: KEBAB_CASE
+# jackson:
+#    property-naming-strategy: KEBAB_CASE
 
