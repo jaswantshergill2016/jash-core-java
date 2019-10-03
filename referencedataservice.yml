@@ -26,10 +26,11 @@ api:
   url: https://www.fullstacklabs.ca
   license: "Full Stack Labs API License"
   license-url: https://www.fullstacklabs.ca
-  
-activemq:
-  broker-url: tcp://localhost:61616
-  #broker-url: tcp://localhost:5672
+
+spring:
+  activemq:
+    broker-url: tcp://localhost:61616
+    #broker-url: tcp://localhost:5672
 
 destination:
   input-queue: input-queue
