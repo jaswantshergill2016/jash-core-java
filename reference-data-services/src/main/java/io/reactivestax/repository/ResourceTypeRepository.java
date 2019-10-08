@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResourceTypeRepository extends CrudRepository<ResourceTypes,Integer> {
 
+    public ResourceTypes findResourceTypesByResourceName(String resourceName);
+
 
 }

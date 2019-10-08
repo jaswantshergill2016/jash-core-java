@@ -10,7 +10,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 @Configuration
 public class SenderConfig {
-
+/*
   @Value("${activemq.broker-url}")
   private String brokerUrl;
 
@@ -34,8 +34,9 @@ public class SenderConfig {
         new JmsTemplate(JMSCachingConnectionFactory());
     return jmsTemplate;
   }
+  */
 
-
+  /*
   @Bean
   public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
     DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
@@ -43,4 +44,5 @@ public class SenderConfig {
     factory.setConcurrency("1-1");
     return factory;
   }
+  */
 }

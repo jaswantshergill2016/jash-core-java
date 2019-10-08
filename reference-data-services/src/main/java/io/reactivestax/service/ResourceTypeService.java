@@ -18,9 +18,10 @@ public class ResourceTypeService {
     private ResourceTypeRepository resourceTypeRepository;
 
 
-    public void createResourceType(ResourceTypes resourceTypes) {
+    public ResourceTypes createResourceType(ResourceTypes resourceTypes) {
 
         resourceTypeRepository.save(resourceTypes);
+        return resourceTypes;
     }
 
     public ResourceTypes getResourceType(String resourceTypeId) {

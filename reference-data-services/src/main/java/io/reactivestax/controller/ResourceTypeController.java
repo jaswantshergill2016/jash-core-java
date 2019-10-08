@@ -44,11 +44,11 @@ public class ResourceTypeController {
 //    @Autowired
 //    private UsersManagerService usersManagerService;
 
-    @Autowired
-    private Sender sender;
+    //@Autowired
+    //private Sender sender;
 
-    @Autowired
-    private VendorService vendorService;
+    //@Autowired
+    //private VendorService vendorService;
     @Autowired
     private ResourceTypeService resourceTypeService;
 

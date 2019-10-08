@@ -7,13 +7,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 //import com.reactivestax.domain.Invoices;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
+@ToString
 @Getter
 @Setter
 @Entity

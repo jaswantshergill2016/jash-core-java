@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ExpenseTypeRepository extends CrudRepository<ExpenseTypes,Integer> {
 
-
+        public ExpenseTypes findExpenseTypesByExpenseType(String expenseType);
 }

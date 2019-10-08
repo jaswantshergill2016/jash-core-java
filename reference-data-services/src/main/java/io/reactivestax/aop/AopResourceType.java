@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import io.reactivestax.domain.ResourceTypes;
 import io.reactivestax.jmssender.Audits;
 import io.reactivestax.jmssender.Sender;
+import io.reactivestax.kafka.KafkaProducer;
 import io.reactivestax.repository.ResourceTypeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -26,6 +27,9 @@ public class AopResourceType {
     private Sender sender;
 
     @Autowired
+    KafkaProducer kafkaProducer;
+
+    @Autowired
     private ResourceTypeRepository resourceTypeRepository;
 
 
@@ -34,6 +38,7 @@ public class AopResourceType {
     //execution(* PACKAGE.*.*(..))
     //Weaving & Weaver
     //@Before("execution(* com.in28minutes.springboot.tutorial.basics.example.aop.data.*.*(..))")
+
     @After("execution(* io.reactivestax.service.ResourceTypeService.createResourceType(..))")
     public void after(JoinPoint joinPoint){
         //Advice
@@ -52,9 +57,25 @@ public class AopResourceType {
 
         String jsonMessage = gson.toJson(audits);
 
+
         System.out.println("jsonMessage==> "+ jsonMessage);
 
         sender.send(jsonMessage);
+        kafkaProducer.sendMessageOnKafkaTopic(audits);
+        /*
+        try{
+            sender.send(jsonMessage);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        try{
+            kafkaProducer.sendMessageOnKafkaTopic(audits);
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        */
+
+
 
     }
 
