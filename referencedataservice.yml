@@ -64,7 +64,7 @@ spring:
   activemq:
     broker-url: tcp://localhost:61616
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: {KAFKA:localhost}:9092
     #broker-url: tcp://localhost:5672
 # jackson:
 #    property-naming-strategy: KEBAB_CASE
