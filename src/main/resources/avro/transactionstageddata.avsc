@@ -1,0 +1,14 @@
+{"namespace": "com.avrogenerated",
+  "type": "record",
+  "name": "TransactionStagedData",
+  "fields": [
+    {"name": "accountNo", "type": "string"},
+    {"name": "transactionDate", "type": ["long", "null"], "logicalType" : "date" },
+    {"name": "transactionDetails", "type": "string"},
+    {"name": "chqNo", "type": "long"},
+    {"name": "valueDate", "type": ["long", "null"], "logicalType" : "date" },
+    {"name": "withDrawlAmt", "type": "double"},
+    {"name": "depositAmt", "type": "double"},
+    {"name": "balanceAmt", "type": "double"}
+  ]
+}

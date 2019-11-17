@@ -1,0 +1,5 @@
+kafka:
+  bootstrap-servers: localhost:9092
+  topic:
+    raw: transactions-raw-topic
+    avro: transactions-avro-topic
